@@ -1,5 +1,5 @@
 function Home() {
-  return "";
+  return "Quem leu me deve a bunda";
 }
 
 export default Home;
