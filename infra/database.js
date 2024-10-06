@@ -6,17 +6,10 @@ async function query(queryObject) {
         port: process.env.POSTGRES_PORT,
         password: process.env.POSTGRES_PASSWORD,
         user: process.env.POSTGRES_USER,
-        database: process.env.POSTGRES_DB
+        database: process.env.POSTGRES_DB,
+        ssl: process.env.NODE_ENV === "development" ? false : true
     });
-
-    console.log("Dados Postgres: " + {
-        host: process.env.POSTGRES_HOST,
-        port: process.env.POSTGRES_PORT,
-        password: process.env.POSTGRES_PASSWORD,
-        user: process.env.POSTGRES_USER,
-        database: process.env.POSTGRES_DB
-    })
-
+    
     try {
         await client.connect();
         const result = await client.query(queryObject);
