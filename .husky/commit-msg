@@ -1,1 +1,2 @@
+npx secretlint --maskSecrets '**/*'
 npx commitlint --edit $1
