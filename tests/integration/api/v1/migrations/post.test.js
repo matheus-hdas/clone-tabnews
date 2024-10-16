@@ -6,28 +6,41 @@ beforeAll(async () => {
   await database.query("drop schema public cascade; create schema public;");
 });
 
-test("POST to /api/v1/migrations should run migrations and return 201 with migration details", async () => {
-  const firstResponse = await fetch("http://localhost:3000/api/v1/migrations", {
-    method: "POST",
+describe("POST to /api/v1/migrations", () => {
+  describe("Anonymous user", () => {
+    describe("Running pendign migrations", () => {
+      test("For the first time", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/migrations",
+          {
+            method: "POST",
+          },
+        );
+        expect(response.status).toBe(201);
+
+        const responseBody = await response.json();
+        expect(Array.isArray(responseBody)).toBe(true);
+        expect(responseBody.length).toBeGreaterThan(0);
+
+        responseBody.forEach((migration) => {
+          expect(migration).toHaveProperty("name");
+          expect(migration).toHaveProperty("path");
+          expect(migration).toHaveProperty("timestamp");
+        });
+      });
+      test("For the second time", async () => {
+        const response = await fetch(
+          "http://localhost:3000/api/v1/migrations",
+          {
+            method: "POST",
+          },
+        );
+        expect(response.status).toBe(200);
+
+        const responseBody = await response.json();
+        expect(Array.isArray(responseBody)).toBe(true);
+        expect(responseBody.length).toBe(0);
+      });
+    });
   });
-  expect(firstResponse.status).toBe(201);
-
-  const firstResponseBody = await firstResponse.json();
-  expect(Array.isArray(firstResponseBody)).toBe(true);
-  expect(firstResponseBody.length).toBeGreaterThan(0);
-
-  firstResponseBody.forEach((migration) => {
-    expect(migration).toHaveProperty("name");
-    expect(migration).toHaveProperty("path");
-    expect(migration).toHaveProperty("timestamp");
-  });
-
-  const finalResponse = await fetch("http://localhost:3000/api/v1/migrations", {
-    method: "POST",
-  });
-  expect(finalResponse.status).toBe(200);
-
-  const finalResponseBody = await finalResponse.json();
-  expect(Array.isArray(finalResponseBody)).toBe(true);
-  expect(finalResponseBody.length).toBe(0);
 });
