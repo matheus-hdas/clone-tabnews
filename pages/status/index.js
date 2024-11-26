@@ -1,5 +1,7 @@
 import useSWR from "swr";
 
+const loadingMessage = "Loading...";
+
 async function fetchAPI(key) {
   const response = await fetch(key);
   const responseBody = await response.json();
@@ -22,7 +24,7 @@ function UpdatedAt() {
     refreshInterval: 5000,
   });
 
-  let updatedAtMessage = "Loading...";
+  let updatedAtMessage = loadingMessage;
 
   if (!isLoading && data) {
     updatedAtMessage = new Date(data.updated_at).toLocaleString("en-US");
@@ -34,19 +36,19 @@ function UpdatedAt() {
 function Dependencies() {
   return (
     <div>
-      <Database />
+      <DatabaseStatus />
     </div>
   );
 }
 
-function Database() {
+function DatabaseStatus() {
   const { isLoading, data } = useSWR("/api/v1/status", fetchAPI, {
     refreshInterval: 5000,
   });
 
-  let version,
-    maxConnections,
-    openConnections = "Loading..";
+  let version = loadingMessage;
+  let maxConnections = loadingMessage;
+  let openConnections = loadingMessage;
 
   if (!isLoading && data) {
     version = data.dependencies.database.version;
