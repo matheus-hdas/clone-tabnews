@@ -1,7 +1,14 @@
+import { createRouter } from "next-connect";
 import database from "infra/database.js";
 import { InternalServerError } from "infra/errors";
 
-async function status(request, response) {
+const router = createRouter();
+
+router.get(getHandler);
+
+export default router.handler();
+
+async function getHandler(request, response) {
   try {
     const databaseName = process.env.POSTGRES_DB;
     const updatedAt = new Date().toISOString();
@@ -48,5 +55,3 @@ async function status(request, response) {
     response.status(500).json(publicErrorObject);
   }
 }
-
-export default status;
