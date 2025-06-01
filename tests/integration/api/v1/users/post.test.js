@@ -1,5 +1,7 @@
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator";
+import user from "models/user";
+import password from "models/password";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -17,7 +19,7 @@ describe("POST to /api/v1/users", () => {
         },
 
         body: JSON.stringify({
-          username: "test-username",
+          username: "testusername",
           email: "testmail@email.com",
           password: "senha123",
         }),
@@ -29,9 +31,9 @@ describe("POST to /api/v1/users", () => {
 
       expect(responseBody).toEqual({
         id: responseBody.id,
-        username: "test-username",
+        username: "testusername",
         email: "testmail@email.com",
-        password: "senha123",
+        password: responseBody.password,
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });
@@ -40,6 +42,21 @@ describe("POST to /api/v1/users", () => {
 
       expect(Date.parse(responseBody.created_at)).not.toBeNaN();
       expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      const userInDatabase = await user.findOneByUsername("testusername");
+      const correctPassowrdMatch = await password.compare(
+        "senha123",
+        userInDatabase.password,
+      );
+
+      expect(correctPassowrdMatch).toBe(true);
+
+      const incorrectPassowrdMatch = await password.compare(
+        "senhaerrada",
+        userInDatabase.password,
+      );
+
+      expect(incorrectPassowrdMatch).toBe(false);
     });
 
     test("With duplicated 'email'", async () => {
@@ -50,7 +67,7 @@ describe("POST to /api/v1/users", () => {
         },
 
         body: JSON.stringify({
-          username: "another-test-username",
+          username: "anothertestusername",
           email: "Testmail@email.com",
           password: "senha123",
         }),
@@ -76,7 +93,7 @@ describe("POST to /api/v1/users", () => {
         },
 
         body: JSON.stringify({
-          username: "Test-username",
+          username: "Testusername",
           email: "anothertestmail@email.com",
           password: "senha123",
         }),
