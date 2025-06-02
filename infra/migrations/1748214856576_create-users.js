@@ -6,34 +6,34 @@ exports.up = (pgm) => {
       default: pgm.func("gen_random_uuid()"),
     },
 
+    // For reference, GitHub limits usernames to 39 characters.
     username: {
-      // For reference, GitHub limits usernames to 39 characters.
       type: "varchar(30)",
       notNull: true,
       unique: true,
     },
 
+    // Why 254 in length? https://stackoverflow.com/a/1199238
     email: {
-      // Why 254 in length? https://stackoverflow.com/a/1199238
       type: "varchar(254)",
       notNull: true,
       unique: true,
     },
 
+    // Why 60 in length? https://www.npmjs.com/package/bcrypt#hash-info
     password: {
-      // Why 72 in length? https://security.stackexchange.com/a/39851
-      type: "varchar(72)",
+      type: "varchar(60)",
       notNull: true,
     },
 
     created_at: {
       type: "timestamptz",
-      default: pgm.func("now()"),
+      default: pgm.func("timezone('utc', now())"),
     },
 
     updated_at: {
       type: "timestamptz",
-      default: pgm.func("now()"),
+      default: pgm.func("timezone('utc', now())"),
     },
   });
 };
